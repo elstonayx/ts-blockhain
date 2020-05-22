@@ -34,7 +34,15 @@ class Blockchain {
     ]
   }
 
-  createTransaction (transaction: Transaction) {
+  addTransaction (transaction: Transaction) {
+    if (!transaction.fromAddress || !transaction.toAddress) {
+      throw new Error('Transactions must have from address and to address!')
+    }
+
+    if (!transaction.isValid()) {
+      throw new Error('Cannot add invalid transaction to the chain.')
+    }
+
     this.pendingTransactions.push(transaction);
   }
 
@@ -72,6 +80,7 @@ class Blockchain {
         isValid 
         && currBlock.hash === currBlock.calculateHash() 
         && currBlock.previousHash === this.chain[currBlockIndex - 1].hash
+        && currBlock.hasValidTransactions()
       )
     }, true)
   }
